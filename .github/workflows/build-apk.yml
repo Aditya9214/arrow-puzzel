@@ -94,7 +94,13 @@ jobs:
           set -euo pipefail
           cp app/build/outputs/apk/debug/app-debug.apk FreePath-debug.apk
           tag="debug-latest"
+          notes="$RUNNER_TEMP/release-notes.md"
+          {
+            cat .github/release-notes.md
+            printf '\n\n---\nBuild %s from `%s`. Debug-signed APK: uninstall any older copy before installing.\n' \
+              "${{ github.run_number }}" "${GITHUB_SHA:0:7}"
+          } > "$notes"
           gh release delete "$tag" --yes --cleanup-tag > /dev/null 2>&1 || true
           gh release create "$tag" FreePath-debug.apk \
-            --title "Free Path - latest debug APK" \
-            --notes "Build ${{ github.run_number }} from ${GITHUB_SHA:0:7}. Debug-signed: uninstall any older copy before installing."
+            --title "Arrow Puzzel - latest debug build" \
+            --notes-file "$notes"
