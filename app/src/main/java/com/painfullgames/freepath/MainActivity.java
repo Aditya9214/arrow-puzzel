@@ -40,6 +40,8 @@ public class MainActivity extends Activity {
     private WebView webView;
     private RewardedAd rewardedAd;
     private boolean adShowing = false;
+    // "heart" or "hint": what the earned reward is for.
+    private String pendingPurpose = "heart";
     private int safeTop = 0;
     private int safeBottom = 0;
 
@@ -172,9 +174,10 @@ public class MainActivity extends Activity {
                 });
     }
 
-    private void showRewardedAd() {
+    private void showRewardedAd(String purpose) {
         runOnUiThread(() -> {
             if (adShowing) return;
+            pendingPurpose = "hint".equals(purpose) ? "hint" : "heart";
             if (rewardedAd == null) {
                 notifyWebReward(false);
                 loadRewardedAd();
@@ -214,14 +217,15 @@ public class MainActivity extends Activity {
 
     private void notifyWebReward(boolean earned) {
         if (webView == null) return;
-        final String js = "window.onRewardedAdResult && window.onRewardedAdResult(" + earned + ");";
+        final String js = "window.onRewardedAdResult && window.onRewardedAdResult("
+                + earned + ",\"" + pendingPurpose + "\");";
         runOnUiThread(() -> webView.evaluateJavascript(js, null));
     }
 
     private final class AdsBridge {
         @JavascriptInterface
-        public void showRewardedAd() {
-            MainActivity.this.showRewardedAd();
+        public void showRewardedAd(String purpose) {
+            MainActivity.this.showRewardedAd(purpose);
         }
     }
 
