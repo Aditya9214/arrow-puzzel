@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     # ubuntu-latest is migrating to Ubuntu 26 (Oct 2026); pin a known-good image.
@@ -79,3 +82,19 @@ jobs:
           name: FreePath-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+
+      # Keep a public download URL that needs no GitHub login:
+      # https://github.com/Aditya9214/arrow-puzzel/releases/download/debug-latest/FreePath-debug.apk
+      - name: Publish APK to rolling release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp app/build/outputs/apk/debug/app-debug.apk FreePath-debug.apk
+          tag="debug-latest"
+          gh release delete "$tag" --yes --cleanup-tag > /dev/null 2>&1 || true
+          gh release create "$tag" FreePath-debug.apk \
+            --title "Free Path - latest debug APK" \
+            --notes "Build ${{ github.run_number }} from ${GITHUB_SHA:0:7}. Debug-signed: uninstall any older copy before installing."
