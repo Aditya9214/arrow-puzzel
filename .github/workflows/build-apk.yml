@@ -7,7 +7,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # ubuntu-latest is migrating to Ubuntu 26 (Oct 2026); pin a known-good image.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,19 +19,54 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      # GitHub's Ubuntu runners already ship an Android SDK. Installing the
+      # packages we need with sdkmanager is more reliable than the
+      # android-actions/setup-android action, which failed on every past run.
+      - name: Install Android SDK packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${ANDROID_HOME:-}" ]; then
+            for d in /usr/local/lib/android/sdk "$HOME/Android/Sdk"; do
+              if [ -d "$d" ]; then export ANDROID_HOME="$d"; break; fi
+            done
+          fi
+          SDK="${ANDROID_HOME:?Android SDK not found on this runner}"
+          export ANDROID_SDK_ROOT="$SDK"
+          echo "Using Android SDK at $SDK"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+          SM="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -x "$SM" ]; then SM="$(command -v sdkmanager || true)"; fi
+          if [ -z "$SM" ]; then
+            echo "::error title=Android SDK::sdkmanager not found in $SDK"
+            exit 1
+          fi
+          echo "sdkmanager: $SM"
+
+          yes | timeout 240 "$SM" --licenses > /tmp/sdk-licenses.log 2>&1 || true
+
+          set +e
+          "$SM" --install "platform-tools" "platforms;android-36" "build-tools;36.0.0" > /tmp/sdk.log 2>&1
+          code=$?
+          set -e
+          tail -n 30 /tmp/sdk.log
+          if [ $code -ne 0 ]; then
+            msg=$(tail -n 20 /tmp/sdk.log | sed ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=Android SDK install failed::$msg"
+            exit $code
+          fi
 
       - name: Build debug APK
         shell: bash
         run: |
-          chmod +x ./gradlew
           set +e
-          ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
-          code=${PIPESTATUS[0]}
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --no-daemon --stacktrace > build.log 2>&1
+          code=$?
+          set -e
+          tail -n 60 build.log
           if [ $code -ne 0 ]; then
             msg=$(grep -A 12 -E "What went wrong|error:|FAILURE" build.log | head -40 | sed ':a;N;$!ba;s/\n/%0A/g')
             echo "::error title=Gradle failure::$msg"
@@ -42,3 +78,4 @@ jobs:
         with:
           name: FreePath-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
