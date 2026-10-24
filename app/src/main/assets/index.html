@@ -418,7 +418,7 @@ function isUnlocked(it){
   case 'daily':return days.length>=u.v;
   case 'perfect':return stats.perfect>=u.v;
   case 'combo':return stats.bestCombo>=u.v;
-  case 'owned':return ALL_ITEMS.filter(isUnlocked).length>=u.v;
+  case 'owned':return ALL_ITEMS.filter(i=>i.u.type!=='owned'&&isUnlocked(i)).length>=u.v;
  }
  return false;
 }
@@ -708,14 +708,14 @@ cv.addEventListener('pointermove',e=>{const p=ptr.get(e.pointerId);if(!p||!G)ret
  else if(tapStart){if(!tapStart.moved&&Math.hypot(e.clientX-tapStart.x,e.clientY-tapStart.y)>8){tapStart.moved=true;pressId=-1}
   if(tapStart.moved){const dt=Math.max(1,e.timeStamp-p.t);vel.x=vel.x*.6+(nx-p.x)/dt*.4;vel.y=vel.y*.6+(ny-p.y)/dt*.4;lastMove=e.timeStamp;V.x+=nx-p.x;V.y+=ny-p.y;clampV()}p.x=nx;p.y=ny;p.t=e.timeStamp}});
 function up(e){const had=ptr.has(e.pointerId);ptr.delete(e.pointerId);if(!had)return;
- if(ptr.size===0){pressId=-1;if(tapStart&&!tapStart.moved&&!pinched&&e.type==='pointerup'){const r=cv.getBoundingClientRect();pick(e.clientX-r.left,e.clientY-r.top)}
+ if(ptr.size===0){pressId=-1;if(tapStart&&!tapStart.moved&&!pinched&&e.type==='pointerup'){const r=cv.getBoundingClientRect();tapAt(e.clientX-r.left,e.clientY-r.top)}
   else if(tapStart&&tapStart.moved&&!pinched&&e.timeStamp-lastMove<90&&Math.hypot(vel.x,vel.y)>.08)inertia={x:vel.x,y:vel.y};tapStart=null}}
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect();tween=null;zoomAt(Math.exp(-e.deltaY*.0018),e.clientX-r.left,e.clientY-r.top)},{passive:false});
 function rayBlocker(p){let x=p.hc+D[p.d][0],y=p.hr+D[p.d][1];const N=G.N;
  while(x>=0&&y>=0&&x<N&&y<N){const o=G.occ[y*N+x];if(o>=0){rb=[x,y];return o}x+=D[p.d][0];y+=D[p.d][1]}return -1}
 function dist(p,x,y){let m=1e9;for(let i=0;i<p.pts.length-1;i++){const a=p.pts[i],b=p.pts[i+1],dx=b[0]-a[0],dy=b[1]-a[1],l=dx*dx+dy*dy;let t=l?((x-a[0])*dx+(y-a[1])*dy)/l:0;t=Math.max(0,Math.min(1,t));m=Math.min(m,Math.hypot(x-a[0]-dx*t,y-a[1]-dy*t))}return m}
-function pick(sx,sy){if(!G||over)return;const best=nearest(sx,sy);if(best)tap(best,sx,sy)}
+function tapAt(sx,sy){if(!G||over)return;const best=nearest(sx,sy);if(best)tap(best,sx,sy)}
 function tap(p,sx,sy){
  const now=performance.now();combo=now-lastTap<1300?combo+1:0;lastTap=now;
  if(combo+1>stats.bestCombo){stats.bestCombo=combo+1;SV('stats',stats)}
