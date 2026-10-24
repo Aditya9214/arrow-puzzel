@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Keypad plate -->
+    <path
+        android:fillColor="#171B36"
+        android:pathData="M36,24 h36 a12,12 0 0 1 12,12 v36 a12,12 0 0 1 -12,12 h-36 a12,12 0 0 1 -12,-12 v-36 a12,12 0 0 1 12,-12 z" />
+    <!-- Keys -->
+    <path
+        android:fillColor="#2A3157"
+        android:pathData="M39,34 h8 a5,5 0 0 1 5,5 v8 a5,5 0 0 1 -5,5 h-8 a5,5 0 0 1 -5,-5 v-8 a5,5 0 0 1 5,-5 z" />
+    <path
+        android:fillColor="#2A3157"
+        android:pathData="M61,34 h8 a5,5 0 0 1 5,5 v8 a5,5 0 0 1 -5,5 h-8 a5,5 0 0 1 -5,-5 v-8 a5,5 0 0 1 5,-5 z" />
+    <path
+        android:fillColor="#2A3157"
+        android:pathData="M39,56 h8 a5,5 0 0 1 5,5 v8 a5,5 0 0 1 -5,5 h-8 a5,5 0 0 1 -5,-5 v-8 a5,5 0 0 1 5,-5 z" />
+    <path
+        android:fillColor="#FFC21A"
+        android:pathData="M61,56 h8 a5,5 0 0 1 5,5 v8 a5,5 0 0 1 -5,5 h-8 a5,5 0 0 1 -5,-5 v-8 a5,5 0 0 1 5,-5 z" />
+    <!-- Arrow on the highlighted key -->
+    <path
+        android:fillColor="#0B0D1A"
+        android:pathData="M59,62.5 h8 v-3.5 l6,6 -6,6 v-3.5 h-8 z" />
+</vector>

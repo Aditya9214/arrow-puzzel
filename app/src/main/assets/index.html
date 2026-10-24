@@ -1,17 +1,17 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>Free Path</title>
+<title>Arrow Puzzel</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
 html,body{margin:0;height:100%;background:var(--pbg,#090a12);overflow:hidden;font-family:"Outfit","Avenir Next","Segoe UI",system-ui,sans-serif}
 body{display:grid;place-items:center}
 :root{--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
-#phone{--u:4px;--bg:#f2f4fb;--card:#fff;--txt:#1b1f4b;--mut:#6b7499;--chip:#e4e8f6;--acc:#5a6bff;--dot:#d3d9ec;--red:#ff4560;
+#phone{--u:4px;--bg:#f2f4fb;--card:#fff;--txt:#1b1f4b;--mut:#6b7499;--chip:#e4e8f6;--acc:#5a6bff;--dot:#d3d9ec;--red:#ff4560;--gold:#d99500;
  position:relative;overflow:hidden;height:100vh;height:100dvh;width:100vw;background:var(--bg);color:var(--txt);font-weight:700;font-size:calc(var(--u)*4);
  padding-top:var(--sat)}
-#phone.dk{--bg:#1d1f2e;--card:#2e3252;--txt:#b4bcf7;--mut:#8087b8;--chip:#272b46;--dot:#2c3150}
+#phone.dk{--bg:#1d1f2e;--card:#2e3252;--txt:#b4bcf7;--mut:#8087b8;--chip:#272b46;--dot:#2c3150;--gold:#ffc21a}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .page{position:absolute;inset:0 0 calc(var(--u)*17) 0;padding:calc(var(--sat) + var(--u)*5) calc(var(--u)*5) 0;display:none;flex-direction:column;align-items:center;overflow-y:auto}
 .page.show{display:flex;animation:in .3s cubic-bezier(.22,.61,.36,1)}
@@ -35,11 +35,17 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .pill.a{background:var(--acc);color:#fff}
 #pv{width:calc(var(--u)*46);height:calc(var(--u)*46);margin:auto 0;animation:float 4s ease-in-out infinite;flex:none}
 @keyframes float{50%{transform:translateY(calc(var(--u)*-1.6)) rotate(1.2deg)}}
-.logo{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*.6)}
-.logo b{font-size:calc(var(--u)*9);font-weight:800;display:flex;align-items:center;gap:calc(var(--u)*1.4);letter-spacing:-.04em}
-.logo b svg{width:calc(var(--u)*7.4);height:calc(var(--u)*7.4)}
-.logo span{font-size:calc(var(--u)*4.6);color:var(--acc);display:flex;align-items:center;gap:calc(var(--u)*1.2)}
-.logo span em{font-style:normal;font-size:calc(var(--u)*3.2);color:var(--mut);font-weight:700;background:var(--chip);padding:calc(var(--u)*.6) calc(var(--u)*2);border-radius:calc(var(--u)*4)}
+.logo{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*.5);margin-top:calc(var(--u)*1)}
+.logo .wm{display:flex;align-items:center;font-size:calc(var(--u)*9.6);font-weight:800;letter-spacing:-.045em;line-height:1;color:var(--txt)}
+.wm-o{display:grid;place-items:center;width:calc(var(--u)*8.4);height:calc(var(--u)*8.4);border-radius:50%;background:var(--card);margin:0 calc(var(--u)*.4);box-shadow:0 3px 10px rgba(20,24,60,.16)}
+.wm-o svg{width:calc(var(--u)*5.2);height:calc(var(--u)*5.2);fill:var(--txt)}
+.wm-sub{font-size:calc(var(--u)*3.9);font-weight:800;letter-spacing:.42em;text-indent:.42em;color:var(--gold)}
+.logo #hl{font-size:calc(var(--u)*3.6);color:var(--mut);display:flex;align-items:center;gap:calc(var(--u)*1.2);font-weight:700;margin-top:calc(var(--u)*.6)}
+.logo #hl em{font-style:normal;font-size:calc(var(--u)*3);color:var(--mut);font-weight:700;background:var(--chip);padding:calc(var(--u)*.5) calc(var(--u)*1.8);border-radius:calc(var(--u)*4)}
+.brand-credit{font-size:calc(var(--u)*2.5);font-weight:800;letter-spacing:.3em;text-indent:.3em;color:var(--mut);opacity:.7}
+.about{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*.7);margin:calc(var(--u)*2) 0 calc(var(--u)*3);color:var(--mut);font-size:calc(var(--u)*3)}
+.about span{font-size:calc(var(--u)*2.4);font-weight:800;letter-spacing:.3em;text-indent:.3em;opacity:.7}
+.home-top{width:100%;display:flex;justify-content:flex-end;align-items:center}
 .big{margin:calc(var(--u)*3.5) 0 calc(var(--u)*5);width:64%;padding:calc(var(--u)*3.4);border-radius:calc(var(--u)*9);background:var(--acc);color:#fff;font-size:calc(var(--u)*5.4);font-weight:800;box-shadow:0 calc(var(--u)*2) calc(var(--u)*5) rgba(90,107,255,.45);box-shadow:0 calc(var(--u)*2) calc(var(--u)*5) color-mix(in srgb,var(--acc) 45%,transparent);transition:transform .12s;flex:none}
 .big:active,.pill:active,.fab:active{transform:scale(.93)}
 h2{margin:calc(var(--u)*1) 0 calc(var(--u)*4);font-size:calc(var(--u)*6.4);font-weight:800}
@@ -105,10 +111,10 @@ h2{margin:calc(var(--u)*1) 0 calc(var(--u)*4);font-size:calc(var(--u)*6.4);font-
 #game{position:absolute;inset:0;z-index:5;background:var(--bg);display:none;flex-direction:column;padding-top:var(--sat)}
 #game.show{display:flex;animation:in .3s cubic-bezier(.22,.61,.36,1)}
 .top{display:flex;align-items:center;gap:calc(var(--u)*2.4);padding:calc(var(--u)*3.6) calc(var(--u)*4) calc(var(--u)*1.6);position:relative;height:calc(var(--u)*17)}
-.cb{width:calc(var(--u)*10.4);height:calc(var(--u)*10.4);border-radius:50%;background:var(--chip);color:var(--mut);display:grid;place-items:center;transition:transform .12s}
+.cb{width:calc(var(--u)*11.2);height:calc(var(--u)*11.2);border-radius:50%;background:var(--chip);color:var(--mut);display:grid;place-items:center;transition:transform .12s,box-shadow .2s;box-shadow:0 2px 10px rgba(28,35,90,.08)}
 .cb svg{width:calc(var(--u)*4.8);height:calc(var(--u)*4.8)}
 .cb:active{transform:scale(.85)}
-#hearts{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:calc(var(--u)*1.4)}
+#hearts{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:calc(var(--u)*1.4);filter:drop-shadow(0 2px 5px rgba(255,69,96,.35))}
 .h{width:calc(var(--u)*7.4);height:calc(var(--u)*7.4)}.h.lost{filter:grayscale(1) opacity(.25);animation:burst .45s}
 @keyframes burst{30%{transform:scale(1.6) rotate(-12deg)}}
 #pb{margin:calc(var(--u)*1.2) calc(var(--u)*5) 0;height:calc(var(--u)*2);border-radius:9px;background:var(--chip);overflow:hidden}
@@ -132,8 +138,8 @@ canvas{touch-action:none}
 @keyframes adpulse{50%{box-shadow:0 0 0 calc(var(--u)*1.8) rgba(255,179,64,.18)}}
 .badge{position:absolute;top:calc(var(--u)*-.6);right:calc(var(--u)*-.6);background:var(--acc);color:#fff;width:calc(var(--u)*5.4);height:calc(var(--u)*5.4);border-radius:50%;font-size:calc(var(--u)*3);display:grid;place-items:center;border:2px solid var(--bg);transition:background .2s}
 .fab.ads .badge{background:#1b1f4b;color:#ffd84d;font-size:calc(var(--u)*2.5);font-weight:800;letter-spacing:.02em}
-#ov{position:absolute;inset:0;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*3.4);background:linear-gradient(#0a74ee,#00b3ff);color:#fff;text-align:center;overflow:hidden;padding:calc(var(--u)*5)}
-#ov.show{display:flex;animation:in .3s}#ov.lose{background:linear-gradient(#4b2a86,#e0436f)}
+#ov{position:absolute;inset:0;z-index:9;display:none;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*3.4);background:linear-gradient(165deg,#5a6bff,#22b8e0);color:#fff;text-align:center;overflow:hidden;padding:calc(var(--u)*5)}
+#ov.show{display:flex;animation:in .3s}#ov.lose{background:linear-gradient(165deg,#3a1230,#ff4560)}
 #ov h3{font-size:calc(var(--u)*10);margin:0;font-weight:800;animation:drop .6s cubic-bezier(.2,1.6,.4,1)}
 #ov p{margin:0;font-size:calc(var(--u)*4.4);opacity:.92}
 #ov .ttl{margin-top:calc(var(--u)*-1.4);font-size:calc(var(--u)*3.4);letter-spacing:.16em;text-transform:uppercase;opacity:.8}
@@ -147,8 +153,8 @@ canvas{touch-action:none}
 .ob.g{background:none;color:#fff;box-shadow:none;padding:6px;font-size:calc(var(--u)*3.9)}
 .cf{position:absolute;top:-20px;width:9px;height:16px;animation:fall linear forwards;border-radius:2px}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-#toast{position:absolute;bottom:calc(var(--u)*24);left:50%;transform:translate(-50%,20px);background:var(--txt);color:var(--bg);padding:calc(var(--u)*1.8) calc(var(--u)*3.6);border-radius:calc(var(--u)*5);font-size:calc(var(--u)*3.6);opacity:0;transition:.25s;pointer-events:none;z-index:20;white-space:nowrap}
-#toast.s{opacity:1;transform:translate(-50%,0) scale(1.04)}
+#toast{position:absolute;bottom:calc(var(--u)*25);left:50%;transform:translate(-50%,20px) scale(.96);background:var(--txt);color:var(--bg);padding:calc(var(--u)*1.8) calc(var(--u)*3.6);border-radius:calc(var(--u)*5);font-size:calc(var(--u)*3.6);opacity:0;transition:.25s;pointer-events:none;z-index:20;max-width:86%;text-align:center;line-height:1.3;box-shadow:0 6px 20px rgba(10,12,30,.28)}
+#toast.s{opacity:1;transform:translate(-50%,0) scale(1)}
 @media (prefers-reduced-motion:reduce){.cf{display:none}#pv{animation:none}.rv .rays{animation:none}.fab.ads{animation:none}}
 @media (min-width:700px) and (min-height:480px){
  body{background:radial-gradient(circle at 25% 15%,#1d2760 0,#0b0d1c 55%,#06070d)}
@@ -171,18 +177,54 @@ canvas{touch-action:none}
 #ad.show{display:flex;animation:in .25s}
 #ad .rg{width:calc(var(--u)*26);height:calc(var(--u)*26);position:relative;display:grid;place-items:center;font-size:calc(var(--u)*11);font-weight:800;color:#fff}
 #ad .rg svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+#ad #arc{animation:adarc 1.5s ease-in-out infinite alternate}
+@keyframes adarc{from{stroke-dashoffset:276.5}to{stroke-dashoffset:70}}
 #ad small{opacity:.7;font-size:calc(var(--u)*3.4);line-height:1.4}
 #ad .gb{width:70%}
+
+/* ── Splash / brand ──────────────────────────────────── */
+#splash{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,#171c38 0,#080a14 58%,#04050a 100%);animation:spOut .55s ease 1.35s forwards}
+@keyframes spOut{to{opacity:0;visibility:hidden}}
+.sp-in{display:flex;flex-direction:column;align-items:center;gap:2.2vmin;padding:6vmin;text-align:center}
+.sp-mark{width:36vmin;height:36vmin;filter:drop-shadow(0 8px 26px rgba(230,20,40,.35));animation:spPop .75s cubic-bezier(.2,1.35,.35,1) both}
+@keyframes spPop{from{transform:scale(.8);opacity:0}}
+.sp-co{color:#fff;font-weight:800;font-size:6.2vmin;letter-spacing:.16em;text-indent:.16em;line-height:1;animation:spFade .6s ease .18s both}
+.sp-co em{display:block;font-style:normal;color:#ff2b3d;font-size:2.9vmin;letter-spacing:.62em;text-indent:.62em;margin-top:1.5vmin}
+.sp-rule{width:34vmin;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:spFade .6s ease .3s both}
+.sp-game{display:flex;flex-direction:column;align-items:center;gap:1vmin;animation:spFade .6s ease .42s both}
+.sp-game b{color:#fff;font-weight:800;font-size:7.4vmin;letter-spacing:-.02em;line-height:1}
+.sp-game em{font-style:normal;color:#ffc21a;font-weight:800;font-size:2.7vmin;letter-spacing:.5em;text-indent:.5em}
+.sp-load{width:26vmin;height:1vmin;border-radius:9px;background:rgba(255,255,255,.14);overflow:hidden;margin-top:1.6vmin;animation:spFade .6s ease .5s both}
+.sp-load i{display:block;height:100%;width:12%;border-radius:9px;background:linear-gradient(90deg,#ff2b3d,#ffc21a);animation:spLoad 1.35s cubic-bezier(.45,0,.2,1) forwards}
+@keyframes spLoad{to{width:100%}}
+@keyframes spFade{from{opacity:0;transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){.sp-mark,.sp-co,.sp-rule,.sp-game,.sp-load{animation:none}.sp-load i{width:100%}}
 </style></head><body>
+<div id="splash">
+ <div class="sp-in">
+  <svg class="sp-mark" viewBox="0 0 120 120" aria-hidden="true">
+   <path d="M22 42a42 42 0 0 1 76 0" fill="none" stroke="#e81224" stroke-width="7" stroke-linecap="round"/>
+   <rect x="18" y="50" width="84" height="46" rx="20" fill="#f4f4f5"/>
+   <path d="M41 62h6v6h6v6h-6v6h-6v-6h-6v-6h6z" fill="#0a0b12"/>
+   <g fill="#0a0b12"><circle cx="76" cy="65" r="3.4"/><circle cx="82" cy="71" r="3.4"/><circle cx="76" cy="77" r="3.4"/><circle cx="70" cy="71" r="3.4"/></g>
+   <path d="M48 57l10-3v9zM72 57l-10-3v9z" fill="#e81224"/>
+   <path d="M52 79q8 8 16 0" fill="none" stroke="#e81224" stroke-width="3.4" stroke-linecap="round"/>
+  </svg>
+  <div class="sp-co">PAINFULL<em>GAMES</em></div>
+  <div class="sp-rule"></div>
+  <div class="sp-game"><b>ARROW</b><em>PUZZEL</em></div>
+  <div class="sp-load"><i></i></div>
+ </div>
+</div>
 <div id="phone">
 <section class="page show" id="p-home">
- <div class="chip"><svg width="26" height="26" viewBox="0 0 24 24" fill="var(--mut)"><path d="M12 2s6 5 6 11a6 6 0 0 1-12 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 2-10z"/></svg><span id="st">0</span></div>
+ <div class="home-top"><div class="chip"><svg width="26" height="26" viewBox="0 0 24 24" fill="var(--mut)"><path d="M12 2s6 5 6 11a6 6 0 0 1-12 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 2-10z"/></svg><span id="st">0</span></div></div>
  <div class="cards">
   <div class="card">League<small id="lgn">Bronze</small><svg id="shd" width="84" height="84" viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.400 9 8 11 4.600-2 8-6 8-11V5z" fill="#c9824a"/><path d="M12 4 6 6.300V11c0 3.800 2.400 7 6 8.800V4z" fill="#fff" opacity=".28"/></svg><div class="pill"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M5 2v17l4.500-4 3 7 3-1.300-3-6.700H18z"/></svg><span id="cl">0</span></div></div>
   <div class="card">Challenge<small id="cd">Today</small><svg width="84" height="84" viewBox="0 0 24 24" fill="var(--mut)"><path d="M6 3h12v5a6 6 0 0 1-12 0zM3 4h3v3a2 2 0 0 1-2 0zM18 4h3v3a2 2 0 0 1-2 0zM11 14h2v4h3v3H8v-3h3z" opacity=".8"/></svg><button class="pill a" data-go="chal">Play</button></div>
  </div>
  <canvas id="pv"></canvas>
- <div class="logo"><b><svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 22 21H2z"/></svg>Free Path</b><span id="hl">Level 1 <em id="ttl">Pathfinder</em></span></div>
+ <div class="logo"><b class="wm">ARR<span class="wm-o"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.4 12h9.8l-3.3-3.3 1.5-1.5L18.2 12l-5.8 4.8-1.5-1.5 3.3-3.3H4.4z"/></svg></span>W</b><span class="wm-sub">PUZZEL</span><span id="hl">Level 1 <em id="ttl">Pathfinder</em></span><span class="brand-credit">PAINFULL GAMES</span></div>
  <button class="big" id="play">Play</button>
 </section>
 <section class="page" id="p-chal"><h2>Daily Challenge</h2>
@@ -213,6 +255,7 @@ canvas{touch-action:none}
   <label class="row"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg><span>Combo FX</span><input type="checkbox" class="tg" id="tcx"></label>
  </div>
  <div class="grp"><button class="row" id="rs"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.700M3 4v5h5"/></svg><span>Reset progress</span></button></div>
+ <div class="about">Arrow Puzzel · v1.3<span>PAINFULL GAMES</span></div>
  <div style="color:var(--mut);font-size:calc(var(--u)*3.5);text-align:center;line-height:1.4;padding:0 calc(var(--u)*2)">Tap an arrow that has a clear lane ahead. Drag to move the board, pinch or scroll to zoom. On a computer: arrow keys pan, + / - zoom, F fits, R restarts.</div></section>
 <nav id="nav">
  <button data-go="home" class="on"><svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3z"/></svg>Home</button>
@@ -971,6 +1014,7 @@ const themeMQ=matchMedia('(prefers-color-scheme:dark)'),themeChange=()=>{if(LS('
 if(themeMQ.addEventListener)themeMQ.addEventListener('change',themeChange);else if(themeMQ.addListener)themeMQ.addListener(themeChange);
 
 /* ═══════════ BOOT ═══════════ */
+setTimeout(()=>{const s=document.getElementById('splash');if(s)s.remove()},2100);
 try{
  setU();applyTheme();refreshLoadout();renderHome();renderNewDot();
  $('#reveal').onclick=e=>{if(e.target.id==='reveal')$('#reveal').classList.remove('show')};
