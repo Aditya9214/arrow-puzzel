@@ -27,8 +27,12 @@ import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+
+import androidx.annotation.Nullable;
 
 public class MainActivity extends Activity {
     // Keep true while developing. Google explicitly recommends test ads during development.
@@ -36,9 +40,15 @@ public class MainActivity extends Activity {
     private static final boolean USE_TEST_ADS = true;
     private static final String TEST_REWARDED_ID = "ca-app-pub-3940256099942544/5224354917";
     private static final String PRODUCTION_REWARDED_ID = "ca-app-pub-5458302282891714/8631947211";
+    // Interstitial shown after every 2-3 cleared levels. Insert the real
+    // AdMob interstitial unit here before switching USE_TEST_ADS off.
+    private static final String TEST_INTERSTITIAL_ID = "ca-app-pub-3940256099942544/1033173712";
+    private static final String PRODUCTION_INTERSTITIAL_ID = "";
 
     private WebView webView;
     private RewardedAd rewardedAd;
+    @Nullable
+    private InterstitialAd interstitialAd;
     private boolean adShowing = false;
     // "heart" or "hint": what the earned reward is for.
     private String pendingPurpose = "heart";
@@ -88,7 +98,79 @@ public class MainActivity extends Activity {
         enterFullScreen();
         webView.loadUrl("file:///android_asset/index.html");
 
-        MobileAds.initialize(this, initializationStatus -> runOnUiThread(this::loadRewardedAd));
+        MobileAds.initialize(this, initializationStatus -> {
+            runOnUiThread(() -> {
+                loadRewardedAd();
+                loadInterstitial();
+            });
+        });
+    }
+
+    private String interstitialUnitId() {
+        return USE_TEST_ADS ? TEST_INTERSTITIAL_ID : PRODUCTION_INTERSTITIAL_ID;
+    }
+
+    private void loadInterstitial() {
+        String id = interstitialUnitId();
+        if (id == null || id.length() == 0) return;
+        InterstitialAd.load(this, id, new AdRequest.Builder().build(),
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd ad) {
+                        interstitialAd = ad;
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError error) {
+                        interstitialAd = null;
+                    }
+                });
+    }
+
+    /** Called from the game (AndroidAds.showInterstitial) at a natural break between levels. */
+    private void showInterstitialAd() {
+        runOnUiThread(() -> {
+            if (adShowing) return;
+            InterstitialAd ad = interstitialAd;
+            if (ad == null) {
+                notifyInterstitialClosed();
+                loadInterstitial();
+                return;
+            }
+            interstitialAd = null;
+            adShowing = true;
+            ad.setFullScreenContentCallback(new FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    adShowing = false;
+                    enterFullScreen();
+                    notifyInterstitialClosed();
+                    loadInterstitial();
+                }
+
+                @Override
+                public void onAdFailedToShowFullScreenContent(@NonNull AdError error) {
+                    adShowing = false;
+                    enterFullScreen();
+                    notifyInterstitialClosed();
+                    loadInterstitial();
+                }
+            });
+            notifyInterstitialOpened();
+            ad.show(MainActivity.this);
+        });
+    }
+
+    private void notifyInterstitialOpened() {
+        if (webView == null) return;
+        final String js = "window.onInterstitialOpened && window.onInterstitialOpened();";
+        runOnUiThread(() -> webView.evaluateJavascript(js, null));
+    }
+
+    private void notifyInterstitialClosed() {
+        if (webView == null) return;
+        final String js = "window.onInterstitialClosed && window.onInterstitialClosed();";
+        runOnUiThread(() -> webView.evaluateJavascript(js, null));
     }
 
     /** Hide the status and navigation bars so the game uses the whole screen. */
@@ -192,10 +274,16 @@ public class MainActivity extends Activity {
 
             adToShow.setFullScreenContentCallback(new FullScreenContentCallback() {
                 @Override
+                public void onAdShowedFullScreenContent() {
+                    notifyWebOpened();
+                }
+
+                @Override
                 public void onAdDismissedFullScreenContent() {
                     adShowing = false;
                     enterFullScreen();
                     if (!earned[0]) notifyWebReward(false);
+                    else notifyWebClosed();
                     loadRewardedAd();
                 }
 
@@ -222,10 +310,28 @@ public class MainActivity extends Activity {
         runOnUiThread(() -> webView.evaluateJavascript(js, null));
     }
 
+    /** Let the page duck its music while a full-screen ad is on top of it. */
+    private void notifyWebOpened() {
+        if (webView == null) return;
+        final String js = "window.onAdOpened && window.onAdOpened();";
+        runOnUiThread(() -> webView.evaluateJavascript(js, null));
+    }
+
+    private void notifyWebClosed() {
+        if (webView == null) return;
+        final String js = "window.onAdClosed && window.onAdClosed();";
+        runOnUiThread(() -> webView.evaluateJavascript(js, null));
+    }
+
     private final class AdsBridge {
         @JavascriptInterface
         public void showRewardedAd(String purpose) {
             MainActivity.this.showRewardedAd(purpose);
+        }
+
+        @JavascriptInterface
+        public void showInterstitial() {
+            MainActivity.this.showInterstitialAd();
         }
     }
 
